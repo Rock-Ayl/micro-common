@@ -1,5 +1,10 @@
 package com.rock.micro.common.db;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rock.micro.base.data.BaseDO;
+import com.rock.micro.base.util.FastJsonExtraUtils;
 import com.rock.micro.common.pojo.mdo.TestDO;
 import com.rock.micro.common.serivce.TestService;
 import org.junit.jupiter.api.Test;
@@ -23,8 +28,8 @@ class TestMysql {
         List<TestDO> list = new ArrayList<>();
         TestDO one = new TestDO();
         TestDO two = new TestDO();
-        one.setEmail("4444444444");
-        two.setEmail("33333");
+        one.setEmail("789测试");
+        two.setEmail("11111测试");
         list.add(one);
         list.add(two);
         testService.create(list);
@@ -44,18 +49,53 @@ class TestMysql {
 
     @Test
     void search() {
-
-        //todo
+        //分页
+        int pageNum = 1;
+        int pageSize = 20;
+        //初始化删除条件
+        LambdaQueryWrapper<TestDO> queryWrapper = new LambdaQueryWrapper<>();
+        //限制条件
+        queryWrapper.eq(TestDO::getEmail, "test@qq.com");
+        queryWrapper.eq(TestDO::getPwd, "123456");
+        //排序
+        queryWrapper.orderByDesc(TestDO::getCreateDate);
+        //查询并返回
+        Page<TestDO> pageResult = testService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        //输出
+        FastJsonExtraUtils.toJSONString(pageResult);
     }
 
     @Test
     void updateSkipNull() {
-        //todo
+        //初始化
+        TestDO updateDo = new TestDO();
+        //更新默认参数
+        BaseDO.updateBuild(updateDo);
+        //根据id更新
+        updateDo.setId("123");
+        //修改名称
+        updateDo.setName("测试");
+        //更新实现
+        testService.updateById(updateDo);
     }
 
     @Test
     void updateSkipByWrapper() {
-        //todo
+
+        //初始化
+        TestDO updateDo = new TestDO();
+        //更新默认参数
+        BaseDO.updateBuild(updateDo);
+        //修改名称
+        updateDo.setName("测试");
+
+        //初始化更新条件
+        LambdaUpdateWrapper<TestDO> updateWrapper = new LambdaUpdateWrapper<>();
+        //根据邮箱修改
+        updateWrapper.eq(TestDO::getEmail, "test@qq.com");
+        //更新实现
+        testService.update(updateDo, updateWrapper);
+
     }
 
 }
