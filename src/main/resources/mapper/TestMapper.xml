@@ -13,7 +13,7 @@
 
     <!-- 动态条件查询 -->
     <select id="selectByCondition" resultMap="BaseResultMap">
-        SELECT * FROM micro_user_test
+        SELECT * FROM micro_common_test
         <where>
             <if test="name != null and name != ''">
                 AND name LIKE CONCAT('%', #{name}, '%')
